@@ -1,78 +1,82 @@
 import pytest
 import sys
 
-def EString(fret):
-    EStringNotes = ["E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B","C","C#/Db","D","D#/Eb",
-        "E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B","C","C#/Db","D","D#/Eb"]
-    if fret != "-":
-        fret = EStringNotes[int(fret)]
-    return fret
 
-def test_E_string_notes():
-    assert EString(0) == "E"
-    assert EString(13) == "F"
+def process_fret(string, fret):
+    try:
+        note = string[int(fret) % 12]
+    except ValueError: 
+        note = "-"
+    finally:
+        return note
 
-def AString(fret):
-    AStringNotes = ["A","A#/Bb","B","C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab",
-        "A","A#/Bb","B","C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab"]
-    if fret != "-":
-        fret = AStringNotes[int(fret)]
-    return fret
 
-def test_A_string_notes():
-    assert AString(0) == "A"
-    assert AString(13) == "A#/Bb"
+def return_chromatic_scale(root_note):
+    a_chromatic = ["A","A#/Bb","B","C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab"]
+    return a_chromatic[root_note:] + a_chromatic[0:root_note - 1]
 
-def DString(fret):
-    DStringNotes = ["D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B","C","C#/Db",
-        "D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B","C","C#/Db"]
-    if fret != "-":
-        fret = DStringNotes[int(fret)]
-    return fret
 
-def test_D_string_notes():
-    assert DString(0) == "D"
-    assert DString(13) == "D#/Eb"
-
-def GString(fret):
-    GStringNotes = ["G","G#/Ab","A","A#/Bb","B","C","C#/Db","D","D#/Eb","E","F","F#/Gb",
-        "G","G#/Ab","A","A#/Bb","B","C","C#/Db","D","D#/Eb","E","F","F#/Gb"]
-    if fret != "-":
-        fret = GStringNotes[int(fret)]
-    return fret
-
-def test_G_string_notes():
-    assert GString(0) == "G"
-    assert GString(13) == "G#/Ab"
-
-def BString(fret):
-    BStringNotes = ["B","C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb",
-        "B","C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb"]
-    if fret != "-":
-        fret = BStringNotes[int(fret)]
-    return fret
-
-def test_B_string_notes():
-    assert BString(0) == "B"
-    assert BString(13) == "C"
-
-def eString(fret):
-    return EString(fret)
+def get_e_string_note(fret):
+    return process_fret(return_chromatic_scale(7), fret)
+        
 
 def test_e_string_notes():
-    assert eString(0) == "E"
-    assert eString(13) == "F"
+    assert get_e_string_note(0) == "E"
+    assert get_e_string_note(13) == "F"
+
+
+def get_a_string_note(fret):
+    return process_fret(return_chromatic_scale(0), fret)
+
+
+def test_a_string_notes():
+    assert get_a_string_note(0) == "A"
+    assert get_a_string_note(13) == "A#/Bb"
+
+
+def get_d_string_note(fret):
+    return process_fret(return_chromatic_scale(5), fret)
+
+
+def test_d_string_notes():
+    assert get_d_string_note(0) == "D"
+    assert get_d_string_note(13) == "D#/Eb"
+
+
+def get_g_string_note(fret):
+    return process_fret(return_chromatic_scale(10), fret)
+
+
+def test_g_string_notes():
+    assert get_g_string_note(0) == "G"
+    assert get_g_string_note(13) == "G#/Ab"
+
+
+def get_b_string_note(fret):
+    return process_fret(return_chromatic_scale(2), fret)
+
+
+def test_b_string_notes():
+    assert get_b_string_note(0) == "B"
+    assert get_b_string_note(13) == "C"
+
 
 def frets_to_notes():
-    return (EString(sys.argv[1]) + " " + AString(sys.argv[2]) + " " + DString(sys.argv[3]) + 
-        " " + GString(sys.argv[4]) + " " + BString(sys.argv[5]) + " " + eString(sys.argv[6]))
+    try:
+        return (get_e_string_note(sys.argv[1]) + " " + get_a_string_note(sys.argv[2]) + " " + get_d_string_note(sys.argv[3]) + 
+              " " + get_g_string_note(sys.argv[4]) + " " + get_b_string_note(sys.argv[5]) + " " + get_e_string_note(sys.argv[6]))
+    except IndexError:
+        print("Must provide a fret value for each string.")
             
+
 def test_frets_to_notes():
     sys.argv = ["","-","2","4","4","3","-"]
     assert frets_to_notes() == "- B F#/Gb B D -"
 
+
 def main():
-    print(frets_to_notes())
+    frets_to_notes()
+
 
 ##########################
 
